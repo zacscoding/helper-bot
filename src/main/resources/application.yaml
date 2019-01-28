@@ -1,0 +1,43 @@
+## Servers
+server:
+  port: 8080
+
+## Spring
+spring:
+  datasource:
+    username: sa
+    password:
+    url: jdbc:h2:file:./db/data;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    hikari:
+      jdbc-url: jdbc:h2:file:./db/data;DB_CLOSE_ON_EXIT=FALSE
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+
+## logging
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+        type:
+          descriptor:
+            sql:
+              BasicBinder: trace
+    helperbot: debug
+    root: info
+
+# Bot
+bot:
+  # bot types ["slack"]
+  type: slacksssssss
+  slack:
+    enabled: true
+    web-hook-url: <paste ur webhook url>
+    bot-token: <paste ur bot token>
+slackApi: https://slack.com/api
+
