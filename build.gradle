@@ -35,6 +35,10 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-    // https://mvnrepository.com/artifact/me.ramswaroop.jbot/jbot
+    // jbot for slack
     compile 'me.ramswaroop.jbot:jbot:4.1.0'
+    // jcommander
+    compile "com.beust:jcommander:1.72"
+    // http client
+    compile "org.apache.httpcomponents:httpclient:4.5.6"
 }

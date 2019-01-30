@@ -27,7 +27,7 @@ logging:
         type:
           descriptor:
             sql:
-              BasicBinder: trace
+              BasicBinder: debug
     helperbot: debug
     root: info
 

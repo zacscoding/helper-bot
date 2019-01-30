@@ -22,8 +22,8 @@ public class SlackProperties {
 
     @Autowired
     public SlackProperties(@Value("${slackApi}") String slackApi,
-        @Value("${slack.bot-token}") String slackBotToken,
-        @Value("${slack.web-hook-url}") String slackIncomingWebhookUrl) {
+        @Value("${bot.slack.bot-token}") String slackBotToken,
+        @Value("${bot.slack.web-hook-url}") String slackIncomingWebhookUrl) {
 
         this.slackApi = slackApi;
         this.slackBotToken = slackBotToken;

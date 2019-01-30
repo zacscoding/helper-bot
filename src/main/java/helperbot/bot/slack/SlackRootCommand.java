@@ -7,17 +7,17 @@ import org.springframework.util.StringUtils;
 /**
  * @GitHub : https://github.com/zacscoding
  */
-public enum SlackCommand {
+public enum SlackRootCommand {
 
     HELP,
     LINK,
     UNKNOWN;
 
-    private static Set<SlackCommand> TYPES = EnumSet.allOf(SlackCommand.class);
+    private static Set<SlackRootCommand> TYPES = EnumSet.allOf(SlackRootCommand.class);
 
-    public static SlackCommand getType(String type) {
+    public static SlackRootCommand getType(String type) {
         if (StringUtils.hasText(type)) {
-            for (SlackCommand command : TYPES) {
+            for (SlackRootCommand command : TYPES) {
                 if (type.equalsIgnoreCase(command.name())) {
                     return command;
                 }
@@ -25,5 +25,4 @@ public enum SlackCommand {
         }
         return UNKNOWN;
     }
-
 }
