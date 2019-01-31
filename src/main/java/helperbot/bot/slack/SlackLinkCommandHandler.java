@@ -30,15 +30,17 @@ public class SlackLinkCommandHandler implements SlackCommandHandler {
         Objects.requireNonNull(linkService, "linkService must be not null");
         this.linkService = linkService;
         this.objectMapper = new ObjectMapper();
-        this.helpMessage = new StringBuilder("!link command usages\n")
-            .append("!link add -t title -d description -h href -tags #tag1#tag2 , where __ replaced space\n")
-            .append("\te.g) !link add -t spring -d spring docs -h https://... -tag #spring#docs\n")
-            .append("!link update -t title -d description -h href -tags #tag1#tag2\n")
-            .append("\te.g) !link update -i 1 -tags:#spring#doc\n")
-            .append("!link query -tag tag01\n")
-            .append("\te.g) !link search tags #spring#docs\n")
+        this.helpMessage = new StringBuilder("## !link command usages\n")
+            .append("!link add -t title -d description -h href -tag #tag1#tag2 , where \"__\" replaced \" \"\n")
+            .append("\te.g) !link add -t spring -d spring__docs -h https://spring.io/docs -tag #spring#docs\n")
+            .append("!link update -t title -d description -h href -tag #tag1#tag2\n")
+            .append("\te.g) !link update -i 1 -tag #spring#doc\n")
+            .append("!link query -tag tag01     , find all if no args\n")
+            .append("\te.g) !link query -tag #spring  ||  !link query spring\n")
             .append("!link delete -i id\n")
             .append("\te.g) !link delete -i 1\n")
+            .append("!link backup [pretty]  , where pretty is optional\n")
+            .append("\te.g) !link backup pretty\n")
             .toString();
     }
 
@@ -132,6 +134,11 @@ public class SlackLinkCommandHandler implements SlackCommandHandler {
     }
 
     private void handleQueryCommand(SlackMessageSender messageSender, String[] args) throws Exception {
+        // change !link query tagName > !link query -tag tagName
+        if (args != null && args.length > 0 && args[0].charAt(0) != '-') {
+            args = new String[]{"-tag", args[0]};
+        }
+
         LinkEntityCommand linkEntityCommand = parseLinkEntityCommand(args);
         if (logger.isDebugEnabled()) {
             logger.debug("## [Link query command] " + linkEntityCommand);
@@ -143,22 +150,35 @@ public class SlackLinkCommandHandler implements SlackCommandHandler {
         List<LinkEntity> links = linkService.queryByTagName(tagName);
 
         final int entityStringLength = 50;
-        final String delimiter = "        ";
+        final String delimiter = "   ";
         StringBuilder message = new StringBuilder(entityStringLength * links.size());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         for (LinkEntity linkEntity : links) {
-            message.append("[").append(linkEntity.getId()).append("]")
-                .append("[").append(linkEntity.getRegisterDateTime().format(formatter)).append("]").append(delimiter)
-                .append("[").append(linkEntity.getTitle()).append("]").append(delimiter)
-                .append("[").append(linkEntity.getHref()).append("]").append(delimiter);
+            message.append("[Id.title] : ")
+                .append(linkEntity.getId()).append(".").append(linkEntity.getTitle()).append(delimiter)
+                .append("[Description] : ").append(linkEntity.getDescription()).append(delimiter)
+                .append("[Link] : ").append(linkEntity.getHref()).append(delimiter)
+                .append("[Reg time] : ").append(linkEntity.getRegisterDateTime().format(formatter)).append(delimiter);
+
+            message.append("[Tags] : ");
+            for (TagEntity tagEntity : linkEntity.getTags()) {
+                message.append("#").append(tagEntity.getName()).append("  ");
+            }
+            message.append("\n\n");
+        }
+        /*for (LinkEntity linkEntity : links) {
+            message.append("[").append(linkEntity.getId()).append(". ")
+                .append(linkEntity.getTitle()).append("]").append(delimiter)
+                .append("[").append(linkEntity.getDescription()).append("]").append(delimiter)
+                .append("[").append(linkEntity.getHref()).append("]").append(delimiter)
+                .append("[").append(linkEntity.getRegisterDateTime().format(formatter)).append("]").append(delimiter);
 
             message.append("[ ");
             for (TagEntity tagEntity : linkEntity.getTags()) {
                 message.append("#").append(tagEntity.getName()).append("  ");
             }
-            message.append("]")
-                .append("[").append(linkEntity.getDescription()).append("]\n");
-        }
+            message.append("]\n\n");
+        }*/
 
         messageSender.send(message.toString());
     }
